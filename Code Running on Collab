@@ -1,0 +1,40 @@
+!pip install fastapi uvicorn pyngrok transformers torch accelerate
+
+from google.colab import drive
+drive.mount('/content/drive')
+
+from fastapi import FastAPI
+from pydantic import BaseModel
+import uvicorn
+from pyngrok import ngrok
+from transformers import AutoModelForCausalLM, AutoTokenizer
+import torch
+import threading
+
+model_path = "/content/drive/MyDrive/Deepseek 1.5B"
+tokenizer = AutoTokenizer.from_pretrained(model_path, local_files_only=True)
+model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype=torch.float16, device_map="auto", local_files_only=True)
+
+app = FastAPI()
+
+class Prompt(BaseModel):
+    text: str
+
+@app.post("/api/chat")
+def chat_endpoint(prompt: Prompt):
+    inputs = tokenizer(prompt.text, return_tensors="pt").to("cuda")
+    outputs = model.generate(**inputs, max_new_tokens=200)
+    response_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
+    return {"reply": response_text}
+
+ngrok_token = "3CMPuOaYcmm8Uh5gta89WpBCymJ_6wvL42HZG2MuNdj7EgrTb"
+ngrok.set_auth_token(ngrok_token)
+public_url = ngrok.connect(8000).public_url
+print(f"==================================================")
+print(f"🌟 YOUR SECURE API URL IS: {public_url}/api/chat 🌟")
+print(f"==================================================")
+
+def run_server():
+    uvicorn.run(app, host="0.0.0.0", port=8000)
+
+threading.Thread(target=run_server, daemon=True).start()
