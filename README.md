@@ -2,7 +2,11 @@
 
 Hey! I'm Zaim, and for my third Machine Learning assignment, I built a custom chat application powered by the DeepSeek 1.5B model. This application is designed to run locally so you can boot it up and chat with the AI directly on your own machine!
 
-*[Drop your screen recording video right here so people can see the chat interface in action!]*
+
+
+https://github.com/user-attachments/assets/04e314fe-cee3-48b4-a8bf-8a3ba3bdb7db
+
+
 
 ### How to run it:
 * **Download the code:** Run `git clone https://github.com/zaimzon021/Moarch_Chat-Machine_Learning_Assignment_3.git` and open the folder.
